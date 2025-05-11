@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Dream Journal</title>
+</head>
+
+<body>
+    <h1>Dream Journal</h1>
+    <form id="dreamForm">
+        <input type="date" id="date" required><br><br>
+        <textarea id="dream" placeholder="Your dream..." required></textarea><br><br>
+        <textarea id="interpretation" placeholder="Interpretation..."></textarea><br><br>
+        <button type="submit">Save Dream</button>
+    </form>
+
+    <h2>Past Dreams</h2>
+    <div id="dreamsList"></div>
+
+    <script>
+         console.log("🧪 HTML script is running");  // THIS MUST SHOW IN DEVTOOLS
+        const { ipcRenderer } = require('electron');
+        const { marked } = require('marked');
+        let editingId = null;
+
+        async function loadDreams() {
+            const dreams = await ipcRenderer.invoke('load-dreams');
+            
+            const list = document.getElementById('dreamsList');
+
+            list.innerHTML = dreams.map(d => `
+            <div class="dream">
+            <strong>${d.date}</strong><br>
+            <div>${marked.parse(d.dream)}</div>
+            <div style="margin-top: 10px; font-size: 0.9em; color: #aaa;">${marked.parse(d.interpretation)}</div>
+            <button onclick="editDream(${d.id})">Edit</button>
+            </div>
+            `).join('');
+        }
+
+        window.editDream = async function (id) {
+            const dreams = await ipcRenderer.invoke('load-dreams');
+            const dream = dreams.find(d => d.id === id);
+            if (!dream) return;
+
+            document.getElementById('date').value = dream.date;
+            document.getElementById('dream').value = dream.dream;
+            document.getElementById('interpretation').value = dream.interpretation;
+            editingId = id;
+        };
+
+        document.getElementById('dreamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const date = document.getElementById('date').value;
+            const dream = document.getElementById('dream').value;
+            const interpretation = document.getElementById('interpretation').value;
+
+            const dreamData = {
+                id: editingId,
+                date,
+                dream,
+                interpretation
+            };
+
+            await ipcRenderer.invoke('save-dream', dreamData);
+            document.getElementById('dreamForm').reset();
+            editingId = null;
+            loadDreams();
+        });
+
+        loadDreams();
+    </script>
+</body>
+
+</html>

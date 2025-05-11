@@ -1,0 +1,21 @@
+# Don't track personal dream data
+dreams.json
+
+# Node modules
+node_modules/
+
+# Electron build artifacts
+/dist
+/out
+*.log
+
+# macOS junk
+.DS_Store
+
+# Backups or temporary edits
+*.bak
+*.tmp
+
+# Environment files (if you ever add)
+.env
+Coderepository.js

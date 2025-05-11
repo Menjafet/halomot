@@ -1,0 +1,29 @@
+{
+  "name": "halomot",
+  "version": "1.0.0",
+  "description": "dream organizer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Menjafet/halomot.git"
+  },
+  "keywords": [
+    "organizer"
+  ],
+  "author": "FRATER",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Menjafet/halomot/issues"
+  },
+  "homepage": "https://github.com/Menjafet/halomot#readme",
+  "devDependencies": {
+    "electron": "^36.2.0"
+  },
+  "dependencies": {
+    "marked": "^15.0.11"
+  }
+}
