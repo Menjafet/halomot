@@ -9,7 +9,7 @@ h1, h2 {
   color: #f8f8ff;
 }
 
-input, textarea, button {
+input, button {
   background-color: #1c1e2a;
   color: #e0e0f0;
   border: 1px solid #444;
@@ -17,16 +17,52 @@ input, textarea, button {
   margin: 5px 0;
   width: 100%;
   font-family: "Georgia", serif;
+  box-sizing: border-box;
 }
 
 textarea {
-  height: 80px;
+  width: 100%;
+  min-height: 100px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #d0d6f9;
+  background: linear-gradient(135deg, #1e2135 0%, #1a1d30 100%);
+  border: 2px solid #4a4f7a;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 5px 0 15px;
+  box-shadow: inset 0 0 8px #3a3f6a;
+  resize: vertical;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+textarea::placeholder {
+  color: #6f75a1;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+textarea:focus {
+  border-color: #7178e3;
+  box-shadow: 0 0 8px #7178e3, inset 0 0 12px #5a5fd9;
+  outline: none;
+  background: linear-gradient(135deg, #222645 0%, #1e2140 100%);
 }
 
 button {
   background-color: #2c2f3f;
+  color: #e0e0f0;
   cursor: pointer;
   transition: background-color 0.3s;
+  padding: 12px;
+  font-family: "Georgia", serif;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  box-sizing: border-box;
 }
 
 button:hover {
@@ -39,4 +75,187 @@ div.dream {
   padding: 10px;
   background-color: #181a27;
   border-radius: 6px;
+}
+
+/* Scrollbar improvements for textarea on webkit browsers */
+textarea::-webkit-scrollbar {
+  width: 10px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: #1a1d30;
+  border-radius: 10px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #4a4f7a;
+  border-radius: 10px;
+  border: 2px solid #1a1d30;
+}
+
+
+/* here*/
+
+/* 1. Shrink the toolbar padding and icons */
+.editor-toolbar {
+  padding: 4px !important;
+  background: #0f0f1a;       /* match your dark background */
+  border-bottom: 1px solid #222;
+  /* force horizontal layout */
+  display: flex !important;
+  flex-wrap: wrap;
+  flex-direction: row !important;
+  justify-content: flex-start;
+}
+
+.editor-toolbar button {
+  margin: 2px !important;
+  padding: 4px !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+}
+
+.editor-toolbar button i,
+.editor-toolbar button svg {
+  font-size: 1em !important;     /* shrink icon glyphs */
+}
+
+/* 2. Make the editor textarea sit below the toolbar */
+.CodeMirror.cm-s-easymde {
+  margin-top: 0 !important;
+}
+
+/* 3. (Optional) If you still get a vertical “sidebar” toolbar, disable EasyMDE’s autofocus sidebar: */
+.easyMDEContainer .EasyMDE-sidebar {
+  display: none !important;
+}
+
+/* ───────────────────────────────────────────────────────
+   1. Darken the editor background & text
+─────────────────────────────────────────────────────── */
+.EasyMDEContainer .CodeMirror {
+  background-color: #0f0f1a !important;
+  color: #e0e0e0     !important;
+}
+
+/* gutter (line-numbers/sidebar) */
+.CodeMirror-gutters {
+  background: #0f0f1a !important;
+  border-right: 1px solid #222    !important;
+}
+
+/* cursor */
+.CodeMirror-cursor {
+  border-left: 1px solid #e0e0e0 !important;
+}
+
+/* ───────────────────────────────────────────────────────
+   2. Darken the live-preview panels
+─────────────────────────────────────────────────────── */
+.editor-preview,
+.editor-preview-side {
+  background-color: #0f0f1a !important;
+  color: #ccc         !important;
+  border: 1px solid #222 !important;
+  padding: 1em            /* you can adjust */ ;
+}
+
+/* ───────────────────────────────────────────────────────
+   3. Tweak syntax highlighting (optional)
+─────────────────────────────────────────────────────── */
+/* headings */
+.cm-header, .CodeMirror span.cm-header {
+  color: #9cdcfe !important;
+}
+/* bold/strong */
+.cm-strong, .CodeMirror span.cm-strong {
+  color: #dcdcaa !important;
+}
+/* italics */
+.cm-em, .CodeMirror span.cm-em {
+  color: #d4d4f7 !important;
+}
+/* links */
+.cm-link, .CodeMirror span.cm-link {
+  color: #569cd6 !important;
+}
+
+/* ─── Calendar ───────────────────────────────────── */
+#calendar {
+  margin-bottom: 20px;
+}
+.calendar-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.calendar-table caption {
+  text-align: center;
+  font-size: 1.4em;
+  padding: 8px 0;
+}
+.calendar-table th,
+.calendar-table td {
+  border: 1px solid #444;
+  width: 14.28%;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px;
+}
+.calendar-day {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.calendar-day:hover {
+  background-color: #2c2f3f;
+}
+.has-dream {
+  background-color: #444758;
+  border-radius: 50%;
+  color: #fff;
+}
+
+#calendar-controls button {
+  background: none;
+  border: 1px solid #555;
+  color: #eee;
+  padding: 4px 8px;
+  margin: 0 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background 0.2s;
+}
+#calendar-controls button:hover {
+  background: #2c2f3f;
+}
+#month-year-label {
+  font-size: 1.2em;
+  color: #ddd;
+  vertical-align: middle;
+}
+
+
+/* ─── Hover Tooltip ───────────────────────────────── */
+.calendar-day {
+  position: relative; /* needed for absolute positioning of tooltip */
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1000;
+  max-width: 220px;
+  background: rgba(20,20,30,0.95);
+  color: #eee;
+  border: 1px solid #555;
+  padding: 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: pre-wrap;
+  font-size: 0.85em;
+  top: -5px;  /* adjusted in JS */
+  left: 100%; /* adjusted in JS */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
 }

@@ -35,6 +35,7 @@ ipcMain.handle('save-dream', async (event, dreamData) => {
     dreams = dreams.map(d => (d.id === dreamData.id ? dreamData : d)); //condition ? valueIfTrue : valueIfFalse //this last 2 are returns
   } else {
     // ADD NEW
+    console.log("SAY HI");
     const newId = dreams.length ? Math.max(...dreams.map(d => d.id || 0)) + 1 : 1;
     dreamData.id = newId;
     dreams.push(dreamData);

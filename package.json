@@ -24,6 +24,7 @@
     "electron": "^36.2.0"
   },
   "dependencies": {
+    "easymde": "^2.20.0",
     "marked": "^15.0.11"
   }
 }
