@@ -1,5 +1,6 @@
 # Don't track personal dream data
 dreams.json
+dreamData/
 
 # Node modules
 node_modules/
@@ -19,3 +20,4 @@ node_modules/
 # Environment files (if you ever add)
 .env
 Coderepository.js
+dreamsData/dreams copy.json

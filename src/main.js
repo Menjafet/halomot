@@ -2,7 +2,7 @@
 const { app, BrowserWindow , ipcMain} = require('electron')
 const fs = require('fs');
 const path = require('path');
-const filePath = path.join(__dirname, 'dreams.json');
+const filePath = path.join(__dirname, '../dreamsData/dreams.json');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -14,7 +14,7 @@ const createWindow = () => {
     }
   })
 
-  win.loadFile('index.html')
+  win.loadFile('src/renderer/index.html')
 }
 
 

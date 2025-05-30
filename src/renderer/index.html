@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../../node_modules/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Dream Journal</title>
+</head>
+
+<body>
+    <h1>Dream Journal</h1>
+    <div id="calendar-controls" style="text-align:center; margin-bottom:10px;">
+        <button id="prev-month">&larr;</button>
+        <span id="month-year-label"></span>
+        <button id="next-month">&rarr;</button>
+    </div>
+    <!-- CALENDAR -->
+    <div id="calendar"></div>
+
+
+    <form id="dreamForm">
+        <input type="date" id="date" required><br><br>
+        <textarea id="dream" placeholder="Your dream..." style="display:none;"></textarea>
+        <textarea id="interpretation" placeholder="Interpretation..." style="display:none;"></textarea>
+        <button type="submit">Save Dream</button>
+    </form>
+    <script src="../../node_modules/easymde/dist/easymde.min.js"></script>
+
+    <h2>Past Dreams</h2>
+    <div id="dreamsList"></div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const { marked } = require('marked');
+        const EasyMDE = window.EasyMDE;
+
+
+        const { renderCalendar, refreshCalendar } =
+            require('./calendar.js');
+        const { showTooltip, hideTooltip } = require('./tooltipUtils');
+        const { loadDreams } = require('./dataUtils');
+        // const {renderCalendar }
+
+        let editingId = null;
+        // 1) State for which month/year we’re viewing
+        let currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        let currentMonth = currentDate.getMonth(); // 0 = Jan
+
+
+        // 6) Month nav
+        document.getElementById('prev-month').addEventListener('click', () => {
+            if (--currentMonth < 0) { currentMonth = 11; currentYear--; }
+            reload(null);
+        });
+        document.getElementById('next-month').addEventListener('click', () => {
+            if (++currentMonth > 11) { currentMonth = 0; currentYear++; }
+            reload(null);
+        });
+
+        // 2) EasyMDE editors
+        const dreamEditor = new EasyMDE({
+            element: document.getElementById('dream'),
+            placeholder: "Your dream…"
+        });
+        const interpEditor = new EasyMDE({
+            element: document.getElementById('interpretation'),
+            placeholder: "Your interpretation…"
+        });
+
+        // central “day clicked” handler:
+        function onDayClick(dateStr) {
+            // fill the date input
+            document.getElementById('date').value = dateStr;
+            // reload list/calendar filtered by that date
+            reload(dateStr);
+        }
+
+        function reload(filterDate) {
+            loadDreams(
+                all => refreshCalendar(
+                    all, currentYear, currentMonth,
+                    renderCalendar, onDayClick, showTooltip, hideTooltip
+                ),
+                filterDate,
+                '#dreamsList'
+            );
+            
+            //—> FIX FOR EDIT: delegate on the container so it always works
+            const list = document.getElementById('dreamsList');
+            list.onclick = async e => {
+                if (!e.target.classList.contains('edit')) return;
+                const id = Number(e.target.dataset.id);
+                const all = await ipcRenderer.invoke('load-dreams');
+                const d = all.find(x => x.id === id);
+                if (!d) return;
+                // populate the form + editors
+                document.getElementById('date').value = d.date;
+                dreamEditor.value(d.dream);
+                interpEditor.value(d.interpretation);
+                editingId = id;
+            };
+        }
+
+
+
+        // 3) editDream and form submit as before
+        window.editDream = async function (id) {
+            const all = await ipcRenderer.invoke('load-dreams');
+            const d = all.find(x => x.id === id);
+            if (!d) return;
+            document.getElementById('date').value = d.date;
+            dreamEditor.value(d.dream);
+            interpEditor.value(d.interpretation);
+            editingId = id;
+        };
+
+        document.getElementById('dreamForm').addEventListener('submit', async e => {
+            e.preventDefault();
+
+            if (!dreamEditor.value().trim()) {
+                alert("Please write your dream before saving.");
+                return;
+            }
+            const dreamData = {
+                id: editingId,
+                date: document.getElementById('date').value,
+                dream: dreamEditor.value(),
+                interpretation: interpEditor.value()    // ← correctly spelled and on one line
+            };
+
+            await ipcRenderer.invoke('save-dream', dreamData);
+
+            // clear form + editors
+            document.getElementById('dreamForm').reset();
+            dreamEditor.value("");
+            interpEditor.value("");
+            editingId = null;
+            reload(null);
+        });
+        
+
+        reload(null);
+    </script>
+
+</body>
+
+</html>
