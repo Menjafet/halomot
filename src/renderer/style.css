@@ -282,7 +282,7 @@ textarea::-webkit-scrollbar-thumb {
   border: 1px solid #333;
   border-radius: 6px;
   height: 70vh;
-  overflow-y: auto;
+  overflow: hidden;
   margin-top: 10px;
   box-sizing: border-box;
   font-size: var(--reader-font-size);

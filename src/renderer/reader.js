@@ -11,15 +11,19 @@ let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth();
 let currentFilter = null;
-const PAGE_LIMIT = 1500; // approx characters per page
+const BASE_PAGE_LIMIT = 1500; // approx characters per page at font-size 1
 let fontSize = 1;
+
+function getPageLimit() {
+  return Math.round(BASE_PAGE_LIMIT / fontSize);
+}
 
 async function loadAllDreams() {
   allDreams = await ipcRenderer.invoke('load-dreams');
   allDreams.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
-function paginate(text, limit = PAGE_LIMIT) {
+function paginate(text, limit = getPageLimit()) {
   const paragraphs = text.split(/\n{2,}/);
   const pages = [];
   let cur = '';
@@ -44,9 +48,10 @@ function stripTitle(text) {
 }
 
 function prepareDreams(list) {
+  const limit = getPageLimit();
   return list.map(d => {
     const combined = stripTitle(d.dream) + '\n\n### Interpretation\n\n' + stripTitle(d.interpretation);
-    const pages = paginate(combined);
+    const pages = paginate(combined, limit);
     return { ...d, pages, maxPages: pages.length };
   });
 }
@@ -111,8 +116,9 @@ document.getElementById('toggle-calendar').addEventListener('click', () => {
   cont.style.display = cont.style.display === 'none' ? 'block' : 'none';
 });
 
-function applyFontSize() {
+function applyFontSize(options = {}) {
   document.documentElement.style.setProperty('--reader-font-size', fontSize + 'rem');
+  if (!options.skipReload) reload(currentFilter);
 }
 
 document.getElementById('increase-font').addEventListener('click', () => {
@@ -153,6 +159,6 @@ document.body.addEventListener('keydown', e => {
 });
 
 loadAllDreams().then(() => {
-  applyFontSize();
+  applyFontSize({ skipReload: true });
   reload(null);
 });
