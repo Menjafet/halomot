@@ -12,10 +12,11 @@ let currentYear = currentDate.getFullYear();
 let currentMonth = currentDate.getMonth();
 let currentFilter = null;
 const PAGE_LIMIT = 1500; // approx characters per page
+let fontSize = 1;
 
 async function loadAllDreams() {
   allDreams = await ipcRenderer.invoke('load-dreams');
-  allDreams.sort((a, b) => new Date(a.date) - new Date(b.date));
+  allDreams.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
 function paginate(text, limit = PAGE_LIMIT) {
@@ -38,11 +39,16 @@ function paginate(text, limit = PAGE_LIMIT) {
   return pages;
 }
 
+function stripTitle(text) {
+  return text.replace(/^#.*\n/, '');
+}
+
 function prepareDreams(list) {
   return list.map(d => {
-    const combined = `${d.dream}\n\n### Interpretation\n\n${d.interpretation}`;
-    const pages = paginate(combined);
-    return { ...d, pages };
+    const dreamPages = paginate(stripTitle(d.dream));
+    const interpPages = paginate(stripTitle(d.interpretation));
+    const maxPages = Math.max(dreamPages.length, interpPages.length);
+    return { ...d, dreamPages, interpPages, maxPages };
   });
 }
 
@@ -53,12 +59,16 @@ function renderPage() {
     return;
   }
   const dream = filteredDreams[dreamIndex];
-  const content = dream.pages[pageIndex] || '';
+  const dreamPage = dream.dreamPages[pageIndex] || '';
+  const interpPage = dream.interpPages[pageIndex] || '';
   container.innerHTML = `
     <h2>${dream.date}</h2>
-    <div class="page-content">${marked.parse(content)}</div>
+    <div class="page-content">
+      <div class="column dream-column">${marked.parse(dreamPage)}</div>
+      <div class="column interp-column">${marked.parse(interpPage)}</div>
+    </div>
     <div class="page-indicator">
-      ${dreamIndex + 1}/${filteredDreams.length} - Page ${pageIndex + 1}/${dream.pages.length}
+      ${dreamIndex + 1}/${filteredDreams.length} - Page ${pageIndex + 1}/${dream.maxPages}
     </div>
   `;
 }
@@ -104,6 +114,20 @@ document.getElementById('toggle-calendar').addEventListener('click', () => {
   cont.style.display = cont.style.display === 'none' ? 'block' : 'none';
 });
 
+function applyFontSize() {
+  document.documentElement.style.setProperty('--reader-font-size', fontSize + 'rem');
+}
+
+document.getElementById('increase-font').addEventListener('click', () => {
+  fontSize = Math.min(fontSize + 0.1, 2);
+  applyFontSize();
+});
+
+document.getElementById('decrease-font').addEventListener('click', () => {
+  fontSize = Math.max(fontSize - 0.1, 0.6);
+  applyFontSize();
+});
+
 document.getElementById('back-editor').addEventListener('click', () => {
   window.location.href = 'index.html';
 });
@@ -112,7 +136,7 @@ document.body.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') {
     e.preventDefault();
     const dream = filteredDreams[dreamIndex];
-    if (pageIndex < dream.pages.length - 1) {
+    if (pageIndex < dream.maxPages - 1) {
       pageIndex++;
     } else if (dreamIndex < filteredDreams.length - 1) {
       dreamIndex++;
@@ -125,10 +149,13 @@ document.body.addEventListener('keydown', e => {
       pageIndex--;
     } else if (dreamIndex > 0) {
       dreamIndex--;
-      pageIndex = filteredDreams[dreamIndex].pages.length - 1;
+      pageIndex = filteredDreams[dreamIndex].maxPages - 1;
     }
     renderPage();
   }
 });
 
-loadAllDreams().then(() => reload(null));
+loadAllDreams().then(() => {
+  applyFontSize();
+  reload(null);
+});

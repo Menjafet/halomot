@@ -1,3 +1,7 @@
+:root {
+  --reader-font-size: 1rem;
+}
+
 body {
   background-color: #0e0f1a;
   color: #e0e0f0;
@@ -274,12 +278,29 @@ textarea::-webkit-scrollbar-thumb {
 
 .page-content {
   background-color: #181a27;
-  padding: 10px;
+  padding: 10px 10px 20px;
   border: 1px solid #333;
   border-radius: 6px;
   height: 70vh;
   overflow: hidden;
   margin-top: 10px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 20px;
+  font-size: var(--reader-font-size);
+}
+
+.page-content .column {
+  width: 50%;
+  overflow: hidden;
+}
+.dream-column {
+  border-right: 1px solid #444;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+.interp-column {
+  padding-left: 10px;
   box-sizing: border-box;
 }
 
