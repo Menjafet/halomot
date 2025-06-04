@@ -45,10 +45,9 @@ function stripTitle(text) {
 
 function prepareDreams(list) {
   return list.map(d => {
-    const dreamPages = paginate(stripTitle(d.dream));
-    const interpPages = paginate(stripTitle(d.interpretation));
-    const maxPages = Math.max(dreamPages.length, interpPages.length);
-    return { ...d, dreamPages, interpPages, maxPages };
+    const combined = stripTitle(d.dream) + '\n\n### Interpretation\n\n' + stripTitle(d.interpretation);
+    const pages = paginate(combined);
+    return { ...d, pages, maxPages: pages.length };
   });
 }
 
@@ -59,13 +58,11 @@ function renderPage() {
     return;
   }
   const dream = filteredDreams[dreamIndex];
-  const dreamPage = dream.dreamPages[pageIndex] || '';
-  const interpPage = dream.interpPages[pageIndex] || '';
+  const page = dream.pages[pageIndex] || '';
   container.innerHTML = `
     <h2>${dream.date}</h2>
     <div class="page-content">
-      <div class="column dream-column">${marked.parse(dreamPage)}</div>
-      <div class="column interp-column">${marked.parse(interpPage)}</div>
+      ${marked.parse(page)}
     </div>
     <div class="page-indicator">
       ${dreamIndex + 1}/${filteredDreams.length} - Page ${pageIndex + 1}/${dream.maxPages}
