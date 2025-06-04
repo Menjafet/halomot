@@ -212,9 +212,9 @@ textarea::-webkit-scrollbar-thumb {
   background-color: #2c2f3f;
 }
 .has-dream {
-  background-color: #444758;
-  border-radius: 50%;
+  background: linear-gradient(135deg, #6c45bd, #985eff);
   color: #fff;
+  border-radius: 6px;
 }
 
 #calendar-controls button {
