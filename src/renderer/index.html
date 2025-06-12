@@ -10,6 +10,7 @@
 
 <body>
     <h1>Dream Journal</h1>
+    <button id="open-reader" class="switch-btn">Reader View</button>
     <div id="calendar-controls" style="text-align:center; margin-bottom:10px;">
         <button id="prev-month">&larr;</button>
         <span id="month-year-label"></span>
@@ -57,6 +58,10 @@
         document.getElementById('next-month').addEventListener('click', () => {
             if (++currentMonth > 11) { currentMonth = 0; currentYear++; }
             reload(null);
+        });
+
+        document.getElementById('open-reader').addEventListener('click', () => {
+            window.location.href = 'reader.html';
         });
 
         // 2) EasyMDE editors
