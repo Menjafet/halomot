@@ -18,16 +18,20 @@ const createWindow = () => {
 }
 
 
-// Utility to ensure the file exists
+// Utility to ensure the dream data directory and file exist
 function ensureDreamFile() {
-    if (!fs.existsSync(filePath)) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  if (!fs.existsSync(filePath)) {
     fs.writeFileSync(filePath, '[]'); // empty array of dreams
   }
 }
 
 // Handle saving dreams
 ipcMain.handle('save-dream', async (event, dreamData) => {
-
+  ensureDreamFile();
   let dreams = JSON.parse(fs.readFileSync(filePath));
     //console.log("Loaded dreams:", dreams);
   if (dreamData.id != null) {
